@@ -2,7 +2,7 @@
  
  --1. Describe the table to understand their relationship, below reveals the data type whether one is primary key
  
- '''
+```
                                           
                                           Table "public.staging_caers_events"
     Column    |          Type          | Collation | Nullable |                         Default                         
@@ -23,4 +23,4 @@
 Indexes:
     "staging_caers_events_pkey" PRIMARY KEY, btree (serial_id)
 
-'''
+```
