@@ -161,4 +161,116 @@ conclusion: the index worked! (much less time), this is because when ordring the
 ## join
 The join is overall successful, the data is pretty much similar to the stage data, the only difference is the order of the columns, this is due to the inner join only combines the tables but don't order them
 
+## GENERAL QUERIES
+--1. Find the name and product code of all of the products (no duplicates) that give you nightmares 
 
+```
+product   | product_code |                                                           terms                                                           
+-------------+--------------+---------------------------------------------------------------------------------------------------------------------------
+ EXEMPTION 4 | 54           | {NIGHTMARE," INCREASED APPETITE"," HEADACHE"," CONFUSIONAL STATE"," COMPULSIONS"," BLOOD GLUCOSE INCREASED"," AGITATION"}
+ EXEMPTION 4 | 54           | {NIGHTMARE," INCREASED APPETITE"," HEADACHE"," CONFUSIONAL STATE"," COMPULSIONS"," BLOOD GLUCOSE INCREASED"," AGITATION"}
+ EXEMPTION 4 | 54           | {NIGHTMARE," INCREASED APPETITE"," HEADACHE"," CONFUSIONAL STATE"," COMPULSIONS"," BLOOD GLUCOSE INCREASED"," AGITATION"}
+ EXEMPTION 4 | 54           | {NIGHTMARE," INCREASED APPETITE"," HEADACHE"," CONFUSIONAL STATE"," COMPULSIONS"," BLOOD GLUCOSE INCREASED"," AGITATION"}
+ EXEMPTION 4 | 41           | {NIGHTMARE," INCREASED APPETITE"," HEADACHE"," CONFUSIONAL STATE"," COMPULSIONS"," BLOOD GLUCOSE INCREASED"," AGITATION"}
+(5 rows)
+
+
+```
+--2.Create a list of event dates, report ids and product, regardless of whether or not there's a product name
+```
+event_date |    report_id    |                               product                               
+------------+-----------------+---------------------------------------------------------------------
+ 2013-09-29 | 172989          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172990          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172991          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172992          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172993          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172994          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172995          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 172996          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-29 | 173006          | RESER'S STONEMILL KITCHENS COUNTRY RED POTATO SALAD
+ 2013-09-12 | 173016          | MOVE FREE
+ 2013-09-13 | 173073          | NEW ZEALAND GRANNY SMITH APPLES
+ ...
+--THIS IS ONLY PART OF THE LIST
+```
+
+--3.What are the 3 most common symptoms
+```
+ symptom     | count 
+----------------+-------
+ Ovarian cancer | 11632
+ OVARIAN CANCER |  8194
+  Death         |  4787
+(3 rows)
+```
+--sort by alphebetical order
+```
+    symptom                         | count 
+--------------------------------------------------------+-------
+  ABASIA                                                |   149
+  ABDOMINAL ABSCESS                                     |     5
+  ABDOMINAL ADHESIONS                                   |    12
+  ABDOMINAL DISCOMFORT                                  |   785
+  ABDOMINAL DISTENSION                                  |   749
+  ABDOMINAL HERNIA                                      |     2
+  ABDOMINAL HERNIA PERFORATION                          |     2
+  ABDOMINAL INFECTION                                   |     1
+  ABDOMINAL INJURY                                      |     6
+  ABDOMINAL MASS                                        |    11
+  ABDOMINAL NEOPLASM                                    |     2
+  ABDOMINAL PAIN                                        |  2440
+  ABDOMINAL PAIN LOWER                                  |    75
+  ABDOMINAL PAIN UPPER                                  |  2124
+  ABDOMINAL RIGIDITY                                    |    15
+  ABDOMINAL SEPSIS                                      |     2
+  ABDOMINAL SYMPTOM                                     |     2
+  ABDOMINAL TENDERNESS                                  |    20
+  ABNORMAL BEHAVIOUR                                    |    89
+  ABNORMAL CLOTTING FACTOR                              |     4
+  ABNORMAL DREAMS                                       |     9
+  ... ONLY PART OF THE LIST
+  ```
+--4.How afraid should you be of yogurt? 
+```
+product                   | patient_age | age_units 
+---------------------------------------------+-------------+-----------
+ BLUE BUNNY FROZEN YOGURT NO SUGAR ADDED     |          81 | year(s)
+ DANNON BLUEBERRY YOGURT                     |          74 | year(s)
+ DANNON ACTIVIA LIGHT FAT FREE PEACH YOGURT  |          73 | year(s)
+ GENERAL MILLS, YOPLAIT LOW FAT PEACH YOGURT |          72 | year(s)
+ YO GOOD PEACH FLAVORED DRINKABLE YOGURT     |          71 | year(s)
+(5 rows)
+```
+
+--5.Show a comma separated list of symptoms / terms for every event
+```
+serial_id |                               string_agg                                
+-----------+-------------------------------------------------------------------------
+         1 | NAUSEA
+         2 | VOMITING
+         3 | SLEEP DISORDER, ANXIETY, SALIVARY GLAND DISORDER
+         4 |  PAIN, CAUSTIC INJURY, BURNING SENSATION,TENDERNESS, MUCOSAL ULCERATION
+         5 |  DYSGEUSIA,HYPERSENSITIVITY
+(5 rows)
+```
+
+extra credit:
+additional query
+--Find the product that has is most reported
+```
+ product                                                                                                  | case_count 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------
+ EXEMPTION 4                                                                                                                                                                                              |      26668
+ SUPER BETA PROSTATE                                                                                                                                                                                      |       1076
+ VITAMIN D                                                                                                                                                                                                |        605
+ MULTIVITAMIN                                                                                                                                                                                             |        429
+ FISH OIL                                                                                                                                                                                                 |        416
+ 
+ ```
+ ## Conclusions
+ --why this semi-normalized form is better
+ * Semi-normalized form is better when running analysis on specific attribute, it is much more straightforward since it is only related to the primary key. For example, when analyzing the most common symptoms, after being cleaned out from the terms into atomic form, it is much easier to use query to extract the specific data.
+ 
+--why this semi-normalized form is worse / difficult to use?
+* when exploring relationship between multiple attributes it is much harder to since we need to do multiple joins to have a full table before conducting analysis. For example, the question that wants name and product code of all of the products that give nightmare need to combine product table, terms table  before running queries. If the question also wanted patient name, gender, etc, we will have to combine more tables in 1 query (containing multiple subqueries), which makes the code very complex
