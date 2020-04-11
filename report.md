@@ -68,5 +68,5 @@ created_date |                                             product
 result: this shows the combination of the two attributes should be unique - composite key
 
 ## Database Design
-
-
+![alt text](https://github.com/Andreawqh/hw7/blob/master/ER%20Diagram.jpg)
+-- comment: 1. CASE TABLE: include the serial id (a unique generated id) that uniquely identify each row on the table, where it is associated with 1 
