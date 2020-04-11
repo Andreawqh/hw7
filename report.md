@@ -68,5 +68,18 @@ created_date |                                             product
 result: this shows the combination of the two attributes should be unique - composite key
 
 ## Database Design
-![alt text](https://github.com/Andreawqh/hw7/blob/master/ER%20Diagram.jpg)
--- comment: 1. CASE TABLE: include the serial id (a unique generated id) that uniquely identify each row on the table, where it is associated with 1 
+![alt text](https://github.com/Andreawqh/hw7/blob/master/ER%20Diagram.jpeg)
+-- comment: 
+* 1. CASE TABLE: include the serial id (a unique generated id) that uniquely identify each row on the table, where it is associated with 1 or more report_id, and event_date, created_date. it is used to conNect with other tables including: PRODUCT, TERMS, CASE_REPORT 
+
+* 2. PRODUCT TABLE: has 1 to many relationship with CASE table since each product can be associated with multiple cases. the product attribute is associated with PRODUCT_DATA
+
+
+* 3. PRODUCT_DATA: one to one relationshop with PRODUCT, each product has related product_type and product_code, product code is a foreign key that can identify related descriptions
+
+* 4. DESCRIPTION TABLE provide the descriptions that can be identified by the product code
+
+* 5. TERMS is identified by the unique serial _id, many ids can be associated with the same symptoms(separated from the terms). there are multiple symptoms that belong to the same terms-which is shown in the SYMPTOMS TABLE
+
+* 6. CASE_REPORT TABLE is also identified by serial_id, it has the fields of patient age (which will be normalized), and sex, and outcome
+
