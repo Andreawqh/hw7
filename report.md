@@ -83,3 +83,82 @@ result: this shows the combination of the two attributes should be unique - comp
 
 * 6. CASE_REPORT TABLE is also identified by serial_id, it has the fields of patient age (which will be normalized), and sex, and outcome
 
+
+
+## Views and Index
+--small query : find oldest people in table
+```
+patient_age | age_units 
+-------------+-----------
+             | year(s)
+         104 | year(s)
+         104 | year(s)
+         104 | year(s)
+         102 | year(s)
+         101 | year(s)
+         100 | year(s)
+         100 | year(s)
+         100 | year(s)
+         100 | year(s)
+(10 rows)
+
+```
+EXPLAIN: 
+```
+  QUERY PLAN                                   
+-------------------------------------------------------------------------------
+ Limit  (cost=2455.38..2455.41 rows=10 width=12)
+   ->  Sort  (cost=2455.38..2526.42 rows=28417 width=12)
+         Sort Key: patient_age DESC
+         ->  Seq Scan on caers_event  (cost=0.00..1841.30 rows=28417 width=12)
+               Filter: ((age_units)::text ~~* '%year%'::text)
+(5 rows)
+
+
+```
+EXPLAIN ANALYZE
+```
+`QUERY PLAN                                                          
+------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=2455.38..2455.41 rows=10 width=12) (actual time=26.678..26.680 rows=10 loops=1)
+   ->  Sort  (cost=2455.38..2526.42 rows=28417 width=12) (actual time=26.677..26.677 rows=10 loops=1)
+         Sort Key: patient_age DESC
+         Sort Method: top-N heapsort  Memory: 25kB
+         ->  Seq Scan on caers_event  (cost=0.00..1841.30 rows=28417 width=12) (actual time=0.034..21.593 rows=28379 loops=1)
+               Filter: ((age_units)::text ~~* '%year%'::text)
+               Rows Removed by Filter: 51645
+ Planning Time: 0.426 ms
+ Execution Time: 26.713 ms
+(9 rows)
+
+
+```
+EXPLAIN (after add index):
+```
+QUERY PLAN                              
+----------------------------------------------------------------------
+ Limit  (cost=0.00..767.21 rows=10 width=63)
+   ->  Seq Scan on caers_event  (cost=0.00..1841.30 rows=24 width=63)
+         Filter: ((age_units)::text ~~* '%day%'::text)
+(3 rows)
+
+```
+EXPLAIN ANALYZE (after add index)
+```
+ QUERY PLAN                                                    
+-----------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.00..767.21 rows=10 width=63) (actual time=1.679..3.427 rows=10 loops=1)
+   ->  Seq Scan on caers_event  (cost=0.00..1841.30 rows=24 width=63) (actual time=1.677..3.424 rows=10 loops=1)
+         Filter: ((age_units)::text ~~* '%day%'::text)
+         Rows Removed by Filter: 9335
+ Planning Time: 0.087 ms
+ Execution Time: 3.446 ms
+(6 rows)
+
+```
+conclusion: the index worked! (much less time), this is because when ordring the age, it can use a binary tree instead of looking through the data
+
+## join
+The join is overall successful, the data is pretty much similar to the stage data, the only difference is the order of the columns, this is due to the inner join only combines the tables but don't order them
+
+
